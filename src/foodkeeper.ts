@@ -1,17 +1,16 @@
 import type { FoodSpec } from "./types";
+import foodkeeperData from "./foodkeeper.data.json";
 
 /**
- * Curated subset of the USDA FoodKeeper dataset (public domain).
- * Durations are approximate high-quality shelf life in DAYS after purchase,
- * for storage in each location. `null` = not recommended for that location.
+ * Hand-curated overrides for common groceries. These take priority over the
+ * full generated dataset below, because the raw FoodKeeper feed has multiple
+ * variants per food (e.g. several "Milk" rows) and a first-match lookup can
+ * otherwise land on an odd variant. Durations are in DAYS; `null` = that
+ * location isn't recommended.
  *
- * This is a representative ~60-item table for the prototype. The real app would
- * bundle the full ~400-item FoodKeeper feed; the shape here is identical, so
- * expanding it is just adding rows. Anything not found here falls back to Claude.
- *
- * Source: USDA FSIS FoodKeeper — https://www.fsis.usda.gov/ (public data).
+ * Source: USDA FSIS FoodKeeper — https://www.fsis.usda.gov/ (public domain).
  */
-export const FOODKEEPER: FoodSpec[] = [
+const CURATED: FoodSpec[] = [
   // ---- Produce ----
   { name: "Apple", category: "Produce", aliases: ["apples"], recommended: "fridge", pantryDays: 21, fridgeDays: 42, freezerDays: 240, source: "foodkeeper" },
   { name: "Banana", category: "Produce", aliases: ["bananas"], recommended: "pantry", pantryDays: 5, fridgeDays: 9, freezerDays: 60, note: "Skin darkens in fridge but fruit is fine.", source: "foodkeeper" },
@@ -85,4 +84,15 @@ export const FOODKEEPER: FoodSpec[] = [
 
   // ---- Leftovers ----
   { name: "Leftovers (cooked)", category: "Prepared", aliases: ["leftovers", "cooked food"], recommended: "fridge", pantryDays: null, fridgeDays: 4, freezerDays: 120, source: "foodkeeper" },
+];
+
+/**
+ * The full USDA FoodKeeper product feed (~647 items), transformed into FoodSpec
+ * shape at build time from the official public-domain JSON. Curated overrides
+ * come first so common items resolve to the hand-checked entry; the full feed
+ * provides broad long-tail coverage for everything else.
+ */
+export const FOODKEEPER: FoodSpec[] = [
+  ...CURATED,
+  ...(foodkeeperData as unknown as FoodSpec[]),
 ];

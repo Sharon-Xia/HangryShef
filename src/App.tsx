@@ -14,7 +14,7 @@ import {
   urgencyOf,
   validLocations,
 } from "./engine";
-import { emojiFor } from "./emoji";
+import { FoodImage } from "./foodImage";
 import { resolveSpec, type ResolveResult } from "./claudeFallback";
 import { loadInventory, newId, saveInventory } from "./storage";
 import { Settings } from "./Settings";
@@ -254,9 +254,7 @@ function ItemTile({ item, onSelect }: { item: InventoryItem; onSelect: () => voi
     <li className="grid-cell">
       <button className={`tile ${u}`} onClick={onSelect}>
         <div className="tile-img">
-          <span className="tile-emoji" role="img" aria-label={item.spec.name}>
-            {emojiFor(item.spec, item.name)}
-          </span>
+          <FoodImage spec={item.spec} name={item.name} className="tile-photo" />
           <span className="tile-loc" title={LOCATION_LABELS[item.location]}>
             {LOCATION_EMOJI[item.location]}
           </span>
@@ -299,7 +297,7 @@ function DetailSheet({
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal sheet" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-head">
-          <span className="sheet-emoji">{emojiFor(item.spec, item.name)}</span>
+          <FoodImage spec={item.spec} name={item.name} className="sheet-photo" />
           <div className="sheet-title">
             <h2>
               {item.name}
