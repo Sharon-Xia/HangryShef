@@ -18,8 +18,10 @@ import { FoodImage } from "./foodImage";
 import { resolveSpec, type ResolveResult } from "./claudeFallback";
 import { loadInventory, newId, saveInventory } from "./storage";
 import { Settings } from "./Settings";
+import { RecipesView } from "./RecipesView";
 
 type View = "location" | "expiry";
+type Page = "groceries" | "recipes";
 
 const VIA_LABEL: Record<ResolveResult["via"], string> = {
   foodkeeper: "FoodKeeper",
@@ -30,6 +32,7 @@ const VIA_LABEL: Record<ResolveResult["via"], string> = {
 
 export default function App() {
   const [items, setItems] = useState<InventoryItem[]>(() => loadInventory());
+  const [page, setPage] = useState<Page>("groceries");
   const [view, setView] = useState<View>("expiry");
   const [text, setText] = useState("");
   const [adding, setAdding] = useState(false);
@@ -113,6 +116,19 @@ export default function App() {
         </button>
       </header>
 
+      <div className="page-toggle">
+        <button className={page === "groceries" ? "active" : ""} onClick={() => setPage("groceries")}>
+          🛒 Groceries
+        </button>
+        <button className={page === "recipes" ? "active" : ""} onClick={() => setPage("recipes")}>
+          🍳 Recipes
+        </button>
+      </div>
+
+      {page === "recipes" ? (
+        <RecipesView items={items} />
+      ) : (
+        <>
       <form className="add-bar" onSubmit={addItem}>
         <input
           value={text}
@@ -175,6 +191,8 @@ export default function App() {
             </section>
           );
         })
+      )}
+        </>
       )}
 
       {toast && (
